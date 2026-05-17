@@ -1,0 +1,59 @@
+﻿1. Différence entre régression et classification
+La régression prédit une valeur continue (ex: prix, température). La classification prédit une catégorie (ex: spam/non-spam, classe A/B/C).
+
+2. Pourquoi la loss est-elle centrale ?
+La loss mesure l’écart entre les prédictions du modèle et la vérité. C’est le signal principal utilisé pour ajuster les poids pendant l’entraînement.
+
+3. Quand utilise-t-on la MSE ?
+On utilise la MSE (Mean Squared Error) surtout en régression, quand la cible est une valeur numérique continue.
+
+4. Pourquoi la MSE n’est-elle pas idéale en binaire ?
+En classification binaire, la MSE donne souvent des gradients moins adaptés et apprend moins efficacement que la Binary Cross-Entropy, qui est conçue pour des probabilités.
+
+5. Rôle de la sigmoïde ?
+La sigmoïde transforme un logit en valeur entre 0 et 1. Elle permet d’interpréter la sortie comme une probabilité pour la classe positive.
+
+6. Que représente une probabilité prédite ?
+C’est le niveau de confiance du modèle qu’un exemple appartienne à une classe. En binaire, p=0.9 signifie “forte probabilité d’être dans la classe 1”.
+
+7. Rôle de la softmax ?
+La softmax convertit plusieurs logits en probabilités sur plusieurs classes, avec une somme égale à 1.
+
+8. Pourquoi la cross-entropy en multi-classe ?
+Parce qu’elle compare directement la distribution prédite (softmax) à la vraie classe et pénalise fortement les erreurs confiantes. Elle donne des gradients efficaces pour apprendre.
+
+9. Différence entre logit et probabilité ?
+Le logit est une sortie brute du réseau (non bornée). La probabilité est la version transformée (sigmoïde ou softmax), bornée entre 0 et 1.
+
+10. Pourquoi adapter l’activation finale à la tâche ?
+Parce que la sortie doit correspondre au type de problème: valeur continue (pas d’activation ou linéaire), binaire (sigmoïde), multi-classe (softmax). Une mauvaise activation rend l’apprentissage incohérent.
+
+11. Différence entre BCELoss et BCEWithLogitsLoss ?
+`BCELoss` attend des probabilités (donc une sortie déjà passée par `Sigmoid`). `BCEWithLogitsLoss` attend des logits bruts et applique la sigmoïde en interne, de façon plus stable numériquement.
+
+12. Pourquoi ne pas mettre Softmax() avant CrossEntropyLoss() ?
+Parce que `CrossEntropyLoss` applique déjà `LogSoftmax` en interne. Ajouter `Softmax` avant ferait un double traitement et peut dégrader l’apprentissage.
+
+13. Quel type pour les labels multi-classes ?
+En PyTorch avec `CrossEntropyLoss`, les labels doivent être des indices de classe entiers (`torch.long`), forme `[batch_size]`.
+
+14. Pourquoi view(-1,1) en binaire ?
+Pour aligner la forme des labels avec la sortie du modèle binaire (souvent `[batch_size, 1]`). Cela évite les erreurs de dimensions.
+
+15. Rôle de optimizer.zero_grad() ?
+Il remet les gradients à zéro avant un nouveau passage. Sinon, les gradients s’accumulent entre itérations.
+
+16. Que fait loss.backward() ?
+Il calcule les gradients de la loss par rapport aux paramètres du modèle (rétropropagation).
+
+17. Que fait optimizer.step() ?
+Il met à jour les poids du modèle en utilisant les gradients calculés, selon la règle de l’optimiseur (SGD, Adam, etc.).
+
+18. Comment obtenir la classe prédite ?
+En multi-classe: `pred = logits.argmax(dim=1)`. En binaire: `pred = (proba >= 0.5).float()` (ou int selon besoin).
+
+19. Pourquoi standardiser les entrées ?
+Pour mettre les variables sur des échelles comparables, stabiliser les gradients et accélérer la convergence de l’entraînement.
+
+20. Effet d’un learning rate mal choisi ?
+Trop grand: apprentissage instable, oscillations, divergence. Trop petit: apprentissage très lent, risque de rester bloqué loin d’un bon minimum.
